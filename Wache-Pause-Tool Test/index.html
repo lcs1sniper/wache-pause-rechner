@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>WPR</title>
+  <meta name="theme-color" content="#05164d">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="WPR">
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+  <style>
+    :root {
+      --lh-navy: #05164d;
+      --glass: rgba(255, 255, 255, 0.14);
+      --glass-strong: rgba(255, 255, 255, 0.22);
+      --stroke: rgba(255, 255, 255, 0.38);
+      --text: #f7f9ff;
+      --muted: rgba(247, 249, 255, 0.72);
+      --shadow: 0 18px 50px rgba(2, 8, 32, 0.35);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body { min-height: 100%; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(1200px 700px at 12% -10%, rgba(90, 140, 255, 0.35), transparent 55%),
+        radial-gradient(900px 600px at 110% 10%, rgba(255, 255, 255, 0.14), transparent 50%),
+        linear-gradient(165deg, #07133a 0%, var(--lh-navy) 42%, #12306e 100%);
+      padding: 28px 18px 48px;
+    }
+
+    .wrap {
+      width: min(720px, 100%);
+      margin: 0 auto;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 22px;
+    }
+
+    h1 {
+      font-weight: 590;
+      font-size: 34px;
+      letter-spacing: -0.04em;
+    }
+
+    .glass {
+      background: var(--glass);
+      border: 1px solid var(--stroke);
+      border-radius: 28px;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(28px) saturate(160%);
+      -webkit-backdrop-filter: blur(28px) saturate(160%);
+      padding: 22px;
+    }
+
+    .stack { display: grid; gap: 16px; }
+
+    label.field {
+      display: grid;
+      gap: 8px;
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    .row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    input[type="date"],
+    input[type="time"] {
+      width: 100%;
+      border: 1px solid var(--stroke);
+      background: var(--glass-strong);
+      color: var(--text);
+      border-radius: 16px;
+      padding: 12px 14px;
+      font-size: 16px;
+      outline: none;
+      color-scheme: dark;
+    }
+
+    .seg {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 4px;
+      padding: 4px;
+      border-radius: 16px;
+      background: rgba(5, 22, 77, 0.28);
+      border: 1px solid var(--stroke);
+    }
+
+    .seg input {
+      position: absolute;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .seg label {
+      text-align: center;
+      padding: 10px 8px;
+      border-radius: 12px;
+      font-size: 14px;
+      color: var(--muted);
+      cursor: pointer;
+    }
+
+    .seg input:checked + label {
+      background: rgba(255, 255, 255, 0.88);
+      color: var(--lh-navy);
+      font-weight: 600;
+    }
+
+    .slider-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+    }
+
+    .value {
+      color: var(--text);
+      font-size: 22px;
+      font-variant-numeric: tabular-nums;
+      font-weight: 590;
+    }
+
+    input[type="range"] {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 100%;
+      height: 32px;
+      background: transparent;
+    }
+
+    input[type="range"]::-webkit-slider-runnable-track {
+      height: 8px;
+      border-radius: 99px;
+      background: linear-gradient(90deg, rgba(255,255,255,0.22), rgba(255,255,255,0.55));
+    }
+
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 26px;
+      height: 26px;
+      margin-top: -9px;
+      border-radius: 50%;
+      background: #fff;
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
+      border: 1px solid rgba(5, 22, 77, 0.12);
+    }
+
+    .check {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: var(--text);
+      font-size: 15px;
+    }
+
+    .check input {
+      width: 18px;
+      height: 18px;
+      accent-color: #dbe6ff;
+    }
+
+    #zwischen-box { display: none; }
+    #zwischen-box.show { display: grid; gap: 8px; }
+
+    .dress-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .switch {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .switch input {
+      position: absolute;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .switch .num {
+      font-variant-numeric: tabular-nums;
+      font-size: 13px;
+      min-width: 3.6em;
+    }
+
+    .switch input ~ .num.left { text-align: right; color: var(--text); }
+    .switch input ~ .num.right { color: var(--muted); }
+    .switch input:checked ~ .num.left { color: var(--muted); }
+    .switch input:checked ~ .num.right { color: var(--text); }
+
+    .track {
+      width: 44px;
+      height: 26px;
+      border-radius: 99px;
+      background: rgba(255, 255, 255, 0.22);
+      border: 1px solid var(--stroke);
+      position: relative;
+      flex-shrink: 0;
+    }
+
+    .knob {
+      position: absolute;
+      top: 2px;
+      left: 2px;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: #fff;
+      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.22);
+      transition: transform 0.2s ease;
+    }
+
+    .switch input:checked ~ .track .knob {
+      transform: translateX(18px);
+    }
+
+    .timeline { display: grid; gap: 10px; }
+
+    .block {
+      display: grid;
+      grid-template-columns: 8px 1fr auto;
+      gap: 12px;
+      align-items: center;
+      padding: 14px 16px;
+      border-radius: 18px;
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.22);
+    }
+
+    .block.quiet {
+      padding: 8px 14px;
+      background: rgba(255, 255, 255, 0.045);
+      border-color: rgba(255, 255, 255, 0.12);
+      opacity: 0.68;
+    }
+
+    .dot {
+      width: 8px;
+      height: 42px;
+      border-radius: 99px;
+      background: rgba(255, 255, 255, 0.85);
+    }
+
+    .block.quiet .dot {
+      height: 22px;
+      background: rgba(255, 255, 255, 0.4);
+    }
+
+    .block h2 {
+      font-size: 16px;
+      font-weight: 600;
+    }
+
+    .block.quiet h2 {
+      font-size: 13px;
+      font-weight: 500;
+    }
+
+    .block p {
+      color: var(--muted);
+      font-size: 13px;
+      margin-top: 2px;
+    }
+
+    .block.quiet p {
+      font-size: 12px;
+    }
+
+    .when {
+      text-align: right;
+      font-variant-numeric: tabular-nums;
+      font-size: 15px;
+      font-weight: 590;
+    }
+
+    .block.quiet .when {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--muted);
+    }
+
+    .shift {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-top: 8px;
+    }
+
+    .pill {
+      background: rgba(5, 22, 77, 0.28);
+      border-radius: 12px;
+      padding: 8px 10px;
+      font-size: 12px;
+    }
+
+    .pill strong { display: block; font-size: 13px; margin-bottom: 2px; }
+
+    .warn, .ok {
+      border-radius: 18px;
+      padding: 12px 14px;
+      font-size: 14px;
+    }
+
+    .warn {
+      background: rgba(255, 220, 220, 0.16);
+      border: 1px solid rgba(255, 210, 210, 0.35);
+    }
+
+    .meta {
+      display: flex;
+      justify-content: space-between;
+      color: var(--muted);
+      font-size: 13px;
+      padding: 0 6px;
+    }
+
+    @media (max-width: 560px) {
+      .row, .shift { grid-template-columns: 1fr; }
+      h1 { font-size: 28px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap stack">
+    <header>
+      <h1>Wache-Pause-Rechner</h1>
+    </header>
+
+    <section class="glass stack">
+      <div class="seg" role="radiogroup" aria-label="Zeitzone der Ankunft">
+        <input type="radio" name="tz" id="tz-de" value="Europe/Berlin" checked>
+        <label for="tz-de">Deutsche Zeit</label>
+        <input type="radio" name="tz" id="tz-utc" value="UTC">
+        <label for="tz-utc">UTC</label>
+      </div>
+
+      <label class="field">Beginn Wache/Pause
+        <input type="time" id="start-time" step="60">
+      </label>
+      <div class="row">
+        <label class="field">Landezeit
+          <input type="time" id="land-time" step="60">
+        </label>
+        <label class="field">Ankunftsdatum
+          <input type="date" id="land-date">
+        </label>
+      </div>
+
+      <label class="check">
+        <input type="checkbox" id="has-zwischen">
+        Zwischenservice einplanen
+      </label>
+
+      <label class="field" id="zwischen-box">
+        <span class="slider-head">
+          <span>Zwischenservice</span>
+          <span class="value" id="zwischen-label">20 min</span>
+        </span>
+        <input type="range" id="zwischen" min="10" max="90" step="5" value="20">
+      </label>
+
+      <label class="field">
+        <span class="slider-head">
+          <span>2. Service</span>
+          <span class="value" id="svc2-label">40 min</span>
+        </span>
+        <input type="range" id="svc2" min="10" max="150" step="5" value="40">
+      </label>
+
+      <div class="dress-row">
+        <span>Umkleide nach jeder Schicht</span>
+        <label class="switch">
+          <input type="checkbox" id="dress" checked>
+          <span class="num left">10 min</span>
+          <span class="track"><span class="knob"></span></span>
+          <span class="num right">15 min</span>
+        </label>
+      </div>
+    </section>
+
+    <section class="glass stack" id="result"></section>
+  </div>
+
+  <script>
+    const $ = (id) => document.getElementById(id);
+    const landDate = $("land-date");
+    const landTime = $("land-time");
+    const startTime = $("start-time");
+    const svc2 = $("svc2");
+    const zwischen = $("zwischen");
+    const dress = $("dress");
+    const hasZwischen = $("has-zwischen");
+    const zwischenBox = $("zwischen-box");
+    const result = $("result");
+
+    function pad(n) { return String(n).padStart(2, "0"); }
+
+    function todayParts(timeZone) {
+      const parts = new Intl.DateTimeFormat("en-CA", {
+        timeZone,
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+        hour: "2-digit",
+        minute: "2-digit",
+        hourCycle: "h23"
+      }).formatToParts(new Date());
+      const get = (type) => parts.find((p) => p.type === type).value;
+      return {
+        date: `${get("year")}-${get("month")}-${get("day")}`,
+        time: `${get("hour")}:${get("minute")}`
+      };
+    }
+
+    function fromZoned(date, time, timeZone) {
+      const [y, m, d] = date.split("-").map(Number);
+      const [hh, mm] = time.split(":").map(Number);
+      const target = Date.UTC(y, m - 1, d, hh, mm, 0);
+
+      const asInZone = (ms) => {
+        const parts = new Intl.DateTimeFormat("en-US", {
+          timeZone,
+          year: "numeric",
+          month: "2-digit",
+          day: "2-digit",
+          hour: "2-digit",
+          minute: "2-digit",
+          second: "2-digit",
+          hourCycle: "h23"
+        }).formatToParts(new Date(ms));
+        const get = (type) => Number(parts.find((p) => p.type === type).value);
+        return Date.UTC(get("year"), get("month") - 1, get("day"), get("hour"), get("minute"), get("second"));
+      };
+
+      let utcMs = target;
+      utcMs -= asInZone(utcMs) - target;
+      utcMs -= asInZone(utcMs) - target;
+      return new Date(utcMs);
+    }
+
+    function fmt(date, timeZone) {
+      return new Intl.DateTimeFormat("de-DE", {
+        timeZone,
+        hour: "2-digit",
+        minute: "2-digit",
+        hourCycle: "h23"
+      }).format(date);
+    }
+
+    function fmtDay(date, timeZone) {
+      return new Intl.DateTimeFormat("de-DE", {
+        timeZone,
+        weekday: "short",
+        day: "2-digit",
+        month: "2-digit"
+      }).format(date);
+    }
+
+    function minutesBetween(a, b) {
+      return Math.round((b - a) / 60000);
+    }
+
+    function addMinutes(date, minutes) {
+      return new Date(date.getTime() + minutes * 60000);
+    }
+
+    function durationLabel(mins) {
+      const h = Math.floor(mins / 60);
+      const m = mins % 60;
+      if (h === 0) return `${m} min`;
+      if (m === 0) return `${h} h`;
+      return `${h} h ${pad(m)} min`;
+    }
+
+    function tz() {
+      return document.querySelector("input[name='tz']:checked").value;
+    }
+
+    function initTimes() {
+      const now = todayParts(tz());
+      if (!landDate.value) landDate.value = now.date;
+      if (!startTime.value) startTime.value = now.time;
+      if (!landTime.value) {
+        const [h, m] = now.time.split(":").map(Number);
+        const later = (h * 60 + m + 360) % (24 * 60);
+        landTime.value = `${pad(Math.floor(later / 60))}:${pad(later % 60)}`;
+      }
+    }
+
+    function quietBlock(title, note, when) {
+      return `<article class="block quiet">
+        <span class="dot"></span>
+        <div>
+          <h2>${title}</h2>
+          <p>${note}</p>
+        </div>
+        <div class="when">${when}</div>
+      </article>`;
+    }
+
+    function render() {
+      $("svc2-label").textContent = durationLabel(Number(svc2.value));
+      $("zwischen-label").textContent = durationLabel(Number(zwischen.value));
+      zwischenBox.classList.toggle("show", hasZwischen.checked);
+
+      const zone = tz();
+      const clock = todayParts(zone);
+      const now = fromZoned(clock.date, clock.time, zone);
+      let start = fromZoned(clock.date, startTime.value, zone);
+      if (minutesBetween(start, now) > 12 * 60) start = addMinutes(start, 24 * 60);
+
+      let landing = fromZoned(landDate.value, landTime.value, zone);
+      if (landing <= start) landing = addMinutes(landing, 24 * 60);
+
+      const remaining = minutesBetween(start, landing);
+      const service2 = Number(svc2.value);
+      const mid = hasZwischen.checked ? Number(zwischen.value) : 0;
+      const change = dress.checked ? 15 : 10;
+      const reserved = service2 + mid + change * 2;
+      const restTotal = remaining - reserved;
+      const shift = Math.floor(Math.floor(restTotal / 2) / 5) * 5;
+      const leftover = restTotal - shift * 2;
+
+      if (restTotal < 20) {
+        result.innerHTML = `<p class="warn">Zu wenig Restzeit: ${durationLabel(remaining)} bis zur Landung, ${durationLabel(reserved)} sind für Service und Umkleide vorgesehen.</p>`;
+        return;
+      }
+
+      const t0 = start;
+      const t1 = addMinutes(t0, shift);
+      const t2 = addMinutes(t1, change);
+      const t3 = addMinutes(t2, mid);
+      const t4 = addMinutes(t3, shift);
+      const t5 = addMinutes(t4, change);
+      const t6 = addMinutes(t5, service2);
+      const range = (a, b) => `${fmt(a, zone)} – ${fmt(b, zone)}`;
+
+      const changeBlocks = mid
+        ? quietBlock("Umkleide", `Nach der 1. Schicht, ${durationLabel(change)}`, range(t1, t2)) +
+          `<article class="block">
+            <span class="dot"></span>
+            <div>
+              <h2>Zwischenservice</h2>
+              <p>${durationLabel(mid)}</p>
+            </div>
+            <div class="when">${range(t2, t3)}<br><span style="font-weight:400;color:var(--muted)">${fmtDay(t2, zone)}</span></div>
+          </article>`
+        : quietBlock("Umkleide / Schichtwechsel", durationLabel(change), range(t1, t2));
+
+      result.innerHTML = `
+        <div class="meta">
+          <span>Restflug ${durationLabel(remaining)}</span>
+          <span>je Schicht ${durationLabel(shift)}</span>
+        </div>
+        <div class="timeline">
+          <article class="block">
+            <span class="dot"></span>
+            <div>
+              <h2>1. Schicht · Wache / Pause</h2>
+              <p>Teil 1 wach, Teil 2 Pause</p>
+              <div class="shift">
+                <div class="pill"><strong>Gruppe A</strong>Wache</div>
+                <div class="pill"><strong>Gruppe B</strong>Pause</div>
+              </div>
+            </div>
+            <div class="when">${range(t0, t1)}<br><span style="font-weight:400;color:var(--muted)">${durationLabel(shift)}</span></div>
+          </article>
+          ${changeBlocks}
+          <article class="block">
+            <span class="dot"></span>
+            <div>
+              <h2>2. Schicht · Pause / Wache</h2>
+              <p>Teil 1 Pause, Teil 2 wach</p>
+              <div class="shift">
+                <div class="pill"><strong>Gruppe A</strong>Pause</div>
+                <div class="pill"><strong>Gruppe B</strong>Wache</div>
+              </div>
+            </div>
+            <div class="when">${range(t3, t4)}<br><span style="font-weight:400;color:var(--muted)">${durationLabel(shift)}</span></div>
+          </article>
+          ${quietBlock("Umkleide", `Vor dem 2. Service, ${durationLabel(change)}`, range(t4, t5))}
+          <article class="block">
+            <span class="dot"></span>
+            <div>
+              <h2>2. Service</h2>
+              <p>${durationLabel(service2)}</p>
+            </div>
+            <div class="when">${range(t5, t6)}</div>
+          </article>
+          <article class="block">
+            <span class="dot"></span>
+            <div>
+              <h2>Landung</h2>
+              <p>${zone === "UTC" ? "UTC" : "Deutsche Zeit"} · ${fmtDay(landing, zone)}</p>
+            </div>
+            <div class="when">${fmt(landing, zone)}<br><span style="font-weight:400;color:var(--muted)">${zone === "UTC" ? fmt(landing, "Europe/Berlin") + " DE" : fmt(landing, "UTC") + " UTC"}</span></div>
+          </article>
+        </div>
+        ${leftover ? `<p class="ok">${leftover} min Puffer zwischen Ende 2. Service und Landung.</p>` : ""}
+      `;
+    }
+
+    document.querySelectorAll("input").forEach((el) => {
+      el.addEventListener("input", render);
+      el.addEventListener("change", render);
+    });
+
+    initTimes();
+    render();
+    setInterval(render, 30000);
+
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker.register("./sw.js");
+    }
+  </script>
+</body>
+</html>
