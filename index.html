@@ -350,13 +350,6 @@
     </header>
 
     <section class="glass stack">
-      <div class="seg" role="radiogroup" aria-label="Zeitzone der Ankunft">
-        <input type="radio" name="tz" id="tz-de" value="Europe/Berlin" checked>
-        <label for="tz-de">Deutsche Zeit</label>
-        <input type="radio" name="tz" id="tz-utc" value="UTC">
-        <label for="tz-utc">UTC</label>
-      </div>
-
       <label class="field">Beginn Wache/Pause
         <input type="time" id="start-time" step="60">
       </label>
@@ -367,6 +360,13 @@
         <label class="field">Ankunftsdatum
           <input type="date" id="land-date">
         </label>
+      </div>
+      
+      <div class="seg" role="radiogroup" aria-label="Zeitzone der Ankunft">
+        <input type="radio" name="tz" id="tz-de" value="Europe/Berlin" checked>
+        <label for="tz-de">Deutsche Zeit</label>
+        <input type="radio" name="tz" id="tz-utc" value="UTC">
+        <label for="tz-utc">UTC</label>
       </div>
 
       <label class="check">
