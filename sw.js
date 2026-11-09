@@ -1,4 +1,4 @@
-const CACHE = "wpr-v3";
+const CACHE = "wpr-v4";
 const ASSETS = [
   "./",
   "./index.html",
