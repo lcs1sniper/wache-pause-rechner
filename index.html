@@ -120,11 +120,6 @@
     }
 
     @media (hover: hover) and (pointer: fine) {
-      label.field:hover:has(input[type="time"]),
-      label.field:hover:has(input[type="date"]) {
-        color: rgba(198, 214, 245, 0.62);
-      }
-
       label.field:hover:has(input[type="time"]) input,
       label.field:hover:has(input[type="date"]) input {
         background: rgba(78, 98, 146, 0.55);
@@ -181,9 +176,23 @@
     }
 
     .check input {
-      width: 18px;
-      height: 18px;
-      accent-color: #dbe6ff;
+      -webkit-appearance: none;
+      appearance: none;
+      width: 20px;
+      height: 20px;
+      margin: 0;
+      flex-shrink: 0;
+      border-radius: 5px;
+      border: 1px solid rgba(5, 22, 77, 0.18);
+      background-color: #fff;
+      background-repeat: no-repeat;
+      background-position: center;
+      background-size: 13px 13px;
+    }
+
+    .check input:checked {
+      background-color: #fff;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12'%3E%3Cpath d='M2 6.2 L4.7 8.8 L10 3.2' fill='none' stroke='%23111822' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
     }
 
     #zwischen-box { display: none; }
@@ -250,11 +259,6 @@
     }
 
     .switch.is-dragging .track { cursor: grabbing; }
-
-    .dress-row .switch input:checked ~ .track {
-      background: rgba(198, 216, 255, 0.78);
-      border-color: rgba(255, 255, 255, 0.72);
-    }
 
     .knob {
       --x: 0px;
