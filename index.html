@@ -2,9 +2,9 @@
 <html lang="de">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>WPR</title>
-  <meta name="theme-color" content="#05164d">
+  <meta name="theme-color" content="#07133a">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="WPR">
@@ -25,16 +25,34 @@
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
 
-    html, body { min-height: 100%; }
+    html, body { min-height: 100%; min-height: 100dvh; }
+
+    html { background-color: #07133a; }
 
     body {
       font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", sans-serif;
       color: var(--text);
+      background: transparent;
+      padding:
+        max(28px, env(safe-area-inset-top))
+        max(18px, env(safe-area-inset-right))
+        max(48px, env(safe-area-inset-bottom))
+        max(18px, env(safe-area-inset-left));
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      z-index: -1;
+      left: 0;
+      right: 0;
+      top: -50vh;
+      height: 200vh;
       background:
         radial-gradient(1200px 700px at 12% -10%, rgba(90, 140, 255, 0.35), transparent 55%),
         radial-gradient(900px 600px at 110% 10%, rgba(255, 255, 255, 0.14), transparent 50%),
         linear-gradient(165deg, #07133a 0%, var(--lh-navy) 42%, #12306e 100%);
-      padding: 28px 18px 48px;
+      pointer-events: none;
     }
 
     .wrap {
@@ -43,14 +61,20 @@
     }
 
     header {
-      text-align: center;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 44px;
       margin-bottom: 22px;
+      text-align: center;
     }
 
     h1 {
       font-weight: 590;
       font-size: 34px;
       letter-spacing: -0.04em;
+      padding-inline: 148px;
     }
 
     .glass {
@@ -68,19 +92,23 @@
     label.field {
       display: grid;
       gap: 8px;
+      min-width: 0;
       font-size: 13px;
       color: var(--muted);
     }
 
     .row {
       display: grid;
-      grid-template-columns: 1fr 1fr;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
       gap: 12px;
     }
 
     input[type="date"],
     input[type="time"] {
+      display: block;
       width: 100%;
+      max-width: 100%;
+      min-width: 0;
       border: 1px solid var(--stroke);
       background: var(--glass-strong);
       color: var(--text);
@@ -89,37 +117,22 @@
       font-size: 16px;
       outline: none;
       color-scheme: dark;
+      transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
     }
 
-    .seg {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 4px;
-      padding: 4px;
-      border-radius: 16px;
-      background: rgba(5, 22, 77, 0.28);
-      border: 1px solid var(--stroke);
-    }
+    @media (hover: hover) and (pointer: fine) {
+      label.field:hover:has(input[type="time"]),
+      label.field:hover:has(input[type="date"]) {
+        color: rgba(198, 214, 245, 0.62);
+      }
 
-    .seg input {
-      position: absolute;
-      opacity: 0;
-      pointer-events: none;
-    }
-
-    .seg label {
-      text-align: center;
-      padding: 10px 8px;
-      border-radius: 12px;
-      font-size: 14px;
-      color: var(--muted);
-      cursor: pointer;
-    }
-
-    .seg input:checked + label {
-      background: rgba(255, 255, 255, 0.88);
-      color: var(--lh-navy);
-      font-weight: 600;
+      label.field:hover:has(input[type="time"]) input,
+      label.field:hover:has(input[type="date"]) input {
+        background: rgba(78, 98, 146, 0.55);
+        border-color: rgba(168, 188, 224, 0.4);
+        color: rgba(206, 216, 236, 0.72);
+        box-shadow: inset 0 0 0 1px rgba(8, 22, 60, 0.2);
+      }
     }
 
     .slider-head {
@@ -187,11 +200,22 @@
     }
 
     .switch {
+      --travel: 24px;
       display: flex;
       align-items: center;
       gap: 8px;
       cursor: pointer;
       user-select: none;
+      -webkit-user-select: none;
+      -webkit-tap-highlight-color: transparent;
+      touch-action: manipulation;
+    }
+
+    .tz-switch {
+      position: absolute;
+      top: 50%;
+      right: 0;
+      transform: translateY(-50%);
     }
 
     .switch input {
@@ -204,7 +228,10 @@
       font-variant-numeric: tabular-nums;
       font-size: 13px;
       min-width: 3.6em;
+      transition: color 0.22s ease;
     }
+
+    .tz-switch .num { min-width: 1.8em; }
 
     .switch input ~ .num.left { text-align: right; color: var(--text); }
     .switch input ~ .num.right { color: var(--muted); }
@@ -212,29 +239,44 @@
     .switch input:checked ~ .num.right { color: var(--text); }
 
     .track {
-      width: 44px;
-      height: 26px;
+      width: 56px;
+      height: 32px;
       border-radius: 99px;
       background: rgba(255, 255, 255, 0.22);
       border: 1px solid var(--stroke);
       position: relative;
       flex-shrink: 0;
+      cursor: grab;
+      touch-action: none;
+      transition: background 0.25s ease, border-color 0.25s ease;
+    }
+
+    .switch.is-dragging .track { cursor: grabbing; }
+
+    .switch input:checked ~ .track {
+      background: rgba(198, 216, 255, 0.78);
+      border-color: rgba(255, 255, 255, 0.72);
     }
 
     .knob {
+      --x: 0px;
       position: absolute;
       top: 2px;
       left: 2px;
-      width: 20px;
-      height: 20px;
+      width: 26px;
+      height: 26px;
       border-radius: 50%;
       background: #fff;
       box-shadow: 0 3px 10px rgba(0, 0, 0, 0.22);
-      transition: transform 0.2s ease;
+      transform: translateX(var(--x));
+      transition: transform 0.34s cubic-bezier(0.2, 0.9, 0.25, 1.12), width 0.18s ease, box-shadow 0.18s ease;
     }
 
-    .switch input:checked ~ .track .knob {
-      transform: translateX(18px);
+    .switch input:checked ~ .track .knob { --x: var(--travel); }
+
+    .switch.is-dragging .knob {
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.28);
+      transition: none;
     }
 
     .timeline { display: grid; gap: 10px; }
@@ -337,16 +379,34 @@
       padding: 0 6px;
     }
 
-    @media (max-width: 560px) {
-      .row, .shift { grid-template-columns: 1fr; }
-      h1 { font-size: 28px; }
+    @media (max-width: 680px) {
+      .row, .shift { grid-template-columns: minmax(0, 1fr); }
+      h1 { font-size: 28px; padding-inline: 0; }
+      header {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 10px;
+      }
+      .tz-switch {
+        position: static;
+        transform: none;
+        align-self: flex-end;
+      }
     }
+
+    .ios .row { grid-template-columns: minmax(0, 1fr); }
   </style>
 </head>
 <body>
   <div class="wrap stack">
     <header>
       <h1>Wache-Pause-Rechner</h1>
+      <label class="switch tz-switch" title="Zeitzone der Ankunft">
+        <input type="checkbox" id="tz-utc" aria-label="Zeitzone: Deutsche Zeit oder UTC">
+        <span class="num left">DE</span>
+        <span class="track"><span class="knob"></span></span>
+        <span class="num right">UTC</span>
+      </label>
     </header>
 
     <section class="glass stack">
@@ -360,13 +420,6 @@
         <label class="field">Ankunftsdatum
           <input type="date" id="land-date">
         </label>
-      </div>
-      
-      <div class="seg" role="radiogroup" aria-label="Zeitzone der Ankunft">
-        <input type="radio" name="tz" id="tz-de" value="Europe/Berlin" checked>
-        <label for="tz-de">Deutsche Zeit</label>
-        <input type="radio" name="tz" id="tz-utc" value="UTC">
-        <label for="tz-utc">UTC</label>
       </div>
 
       <label class="check">
@@ -496,7 +549,71 @@
     }
 
     function tz() {
-      return document.querySelector("input[name='tz']:checked").value;
+      return $("tz-utc").checked ? "UTC" : "Europe/Berlin";
+    }
+
+    function bindSwitch(sw) {
+      const input = sw.querySelector("input");
+      const track = sw.querySelector(".track");
+      const knob = sw.querySelector(".knob");
+      if (!input || !track || !knob) return;
+
+      const maxX = () => Math.max(0, track.clientWidth - knob.offsetWidth - knob.offsetLeft - 2);
+      const syncTravel = () => sw.style.setProperty("--travel", maxX() + "px");
+      syncTravel();
+      window.addEventListener("resize", syncTravel);
+
+      let startX = 0;
+      let origin = 0;
+      let dragging = false;
+      let moved = false;
+
+      track.addEventListener("pointerdown", (event) => {
+        if (event.button !== undefined && event.button !== 0) return;
+        dragging = true;
+        moved = false;
+        startX = event.clientX;
+        sw.classList.add("is-dragging");
+        origin = input.checked ? maxX() : 0;
+        knob.style.setProperty("--x", origin + "px");
+        track.setPointerCapture(event.pointerId);
+        event.preventDefault();
+        event.stopPropagation();
+      });
+
+      track.addEventListener("pointermove", (event) => {
+        if (!dragging) return;
+        const dx = event.clientX - startX;
+        if (Math.abs(dx) > 4) moved = true;
+        const x = Math.min(maxX(), Math.max(0, origin + dx));
+        knob.style.setProperty("--x", x + "px");
+      });
+
+      const endDrag = (event) => {
+        if (!dragging) return;
+        const dx = event.clientX - startX;
+        const limit = maxX();
+        const x = Math.min(limit, Math.max(0, origin + dx));
+        dragging = false;
+        knob.style.setProperty("--x", x + "px");
+        input.checked = moved ? x >= limit / 2 : !input.checked;
+        input.dispatchEvent(new Event("input", { bubbles: true }));
+        input.dispatchEvent(new Event("change", { bubbles: true }));
+        sw.classList.remove("is-dragging");
+        requestAnimationFrame(() => knob.style.removeProperty("--x"));
+      };
+
+      track.addEventListener("pointerup", endDrag);
+      track.addEventListener("pointercancel", () => {
+        if (!dragging) return;
+        dragging = false;
+        sw.classList.remove("is-dragging");
+        requestAnimationFrame(() => knob.style.removeProperty("--x"));
+      });
+      track.addEventListener("click", (event) => {
+        event.preventDefault();
+        event.stopPropagation();
+      });
     }
 
     function initTimes() {
@@ -614,6 +731,11 @@
         ${leftover ? `<p class="ok">${leftover} min Puffer zwischen Ende 2. Service und Landung.</p>` : ""}
       `;
     }
+
+    const appleTouch = navigator.maxTouchPoints > 1 && /Mac|iPhone|iPad|iPod/.test(navigator.platform + navigator.userAgent);
+    if (appleTouch) document.documentElement.classList.add("ios");
+
+    document.querySelectorAll(".switch").forEach(bindSwitch);
 
     document.querySelectorAll("input").forEach((el) => {
       el.addEventListener("input", render);
