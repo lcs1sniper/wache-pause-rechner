@@ -61,20 +61,14 @@
     }
 
     header {
-      position: relative;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      min-height: 44px;
-      margin-bottom: 22px;
       text-align: center;
+      margin-bottom: 22px;
     }
 
     h1 {
       font-weight: 590;
       font-size: 34px;
       letter-spacing: -0.04em;
-      padding-inline: 148px;
     }
 
     .glass {
@@ -85,6 +79,11 @@
       backdrop-filter: blur(28px) saturate(160%);
       -webkit-backdrop-filter: blur(28px) saturate(160%);
       padding: 22px;
+    }
+
+    .form-card {
+      position: relative;
+      padding-top: 62px;
     }
 
     .stack { display: grid; gap: 16px; }
@@ -213,9 +212,8 @@
 
     .tz-switch {
       position: absolute;
-      top: 50%;
-      right: 0;
-      transform: translateY(-50%);
+      top: 16px;
+      right: 16px;
     }
 
     .switch input {
@@ -253,7 +251,7 @@
 
     .switch.is-dragging .track { cursor: grabbing; }
 
-    .switch input:checked ~ .track {
+    .dress-row .switch input:checked ~ .track {
       background: rgba(198, 216, 255, 0.78);
       border-color: rgba(255, 255, 255, 0.72);
     }
@@ -381,35 +379,53 @@
 
     @media (max-width: 680px) {
       .row, .shift { grid-template-columns: minmax(0, 1fr); }
-      h1 { font-size: 28px; padding-inline: 0; }
-      header {
-        flex-direction: column;
-        align-items: stretch;
-        gap: 10px;
-      }
-      .tz-switch {
-        position: static;
-        transform: none;
-        align-self: flex-end;
-      }
+      h1 { font-size: 28px; }
     }
 
     .ios .row { grid-template-columns: minmax(0, 1fr); }
+
+    @supports (-webkit-touch-callout: none) {
+      input[type="date"],
+      input[type="time"] {
+        -webkit-appearance: none;
+        appearance: none;
+        height: 56px;
+        min-height: 56px;
+        padding: 0 16px;
+        font-size: 20px;
+        line-height: 56px;
+        text-align: center;
+      }
+
+      input[type="date"]::-webkit-date-and-time-value,
+      input[type="time"]::-webkit-date-and-time-value {
+        margin: 0;
+        text-align: center;
+        line-height: 56px;
+      }
+
+      input[type="date"]::-webkit-datetime-edit,
+      input[type="time"]::-webkit-datetime-edit {
+        padding: 0;
+        line-height: 56px;
+        text-align: center;
+      }
+    }
   </style>
 </head>
 <body>
   <div class="wrap stack">
     <header>
       <h1>Wache-Pause-Rechner</h1>
+    </header>
+
+    <section class="glass stack form-card">
       <label class="switch tz-switch" title="Zeitzone der Ankunft">
         <input type="checkbox" id="tz-utc" aria-label="Zeitzone: Deutsche Zeit oder UTC">
         <span class="num left">DE</span>
         <span class="track"><span class="knob"></span></span>
         <span class="num right">UTC</span>
       </label>
-    </header>
-
-    <section class="glass stack">
       <label class="field">Beginn Wache/Pause
         <input type="time" id="start-time" step="60">
       </label>
