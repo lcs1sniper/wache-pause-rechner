@@ -65,6 +65,10 @@
       margin-bottom: 22px;
     }
 
+    html.ipad-app header {
+      margin-top: 36px;
+    }
+
     h1 {
       font-weight: 590;
       font-size: 34px;
@@ -754,6 +758,12 @@
 
     const appleTouch = navigator.maxTouchPoints > 1 && /Mac|iPhone|iPad|iPod/.test(navigator.platform + navigator.userAgent);
     if (appleTouch) document.documentElement.classList.add("ios");
+
+    const standalone = window.matchMedia("(display-mode: standalone)").matches || window.navigator.standalone === true;
+    const ua = navigator.userAgent || "";
+    const isIphone = /iPhone|iPod/.test(ua);
+    const isIpad = /iPad/.test(ua) || (!isIphone && navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+    if (standalone && isIpad) document.documentElement.classList.add("ipad-app");
 
     document.querySelectorAll(".switch").forEach(bindSwitch);
 
