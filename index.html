@@ -767,6 +767,20 @@
     if (standalone && isIpad) document.documentElement.classList.add("ipad-app");
     if (standalone && isIphone) document.documentElement.classList.add("iphone-app");
 
+    // #region agent log
+    const safeProbe = document.createElement("div");
+    safeProbe.style.cssText = "position:fixed;top:0;padding-top:env(safe-area-inset-top);visibility:hidden;pointer-events:none";
+    document.body.appendChild(safeProbe);
+    const displayMode = ["standalone", "fullscreen", "minimal-ui", "browser"].find((mode) => window.matchMedia(`(display-mode: ${mode})`).matches) || "unknown";
+    const headerEl = document.querySelector("header");
+    fetch("http://127.0.0.1:7269/ingest/93a6ff5c-d56f-410d-b37c-e7fd1c11cd3d",{method:"POST",headers:{"Content-Type":"application/json","X-Debug-Session-Id":"26ba1f"},body:JSON.stringify({sessionId:"26ba1f",runId:"pre",hypothesisId:"A-D",location:"index.html:iphone-detect",message:"pwa title detection",data:{standaloneMedia:window.matchMedia("(display-mode: standalone)").matches,navStandalone:window.navigator.standalone===true,displayMode,isIphone,isIpad,classes:document.documentElement.className,marginTop:headerEl?getComputedStyle(headerEl).marginTop:null,headerTop:headerEl?Math.round(headerEl.getBoundingClientRect().top):null,safeTop:parseFloat(getComputedStyle(safeProbe).paddingTop)||0,uaHasIphone:/iPhone/.test(ua),platform:navigator.platform,maxTouch:navigator.maxTouchPoints,build:"v11-debug"},timestamp:Date.now()})}).catch(()=>{});
+    if ("caches" in window) {
+      caches.keys().then((keys) => {
+        fetch("http://127.0.0.1:7269/ingest/93a6ff5c-d56f-410d-b37c-e7fd1c11cd3d",{method:"POST",headers:{"Content-Type":"application/json","X-Debug-Session-Id":"26ba1f"},body:JSON.stringify({sessionId:"26ba1f",runId:"pre",hypothesisId:"C",location:"index.html:sw-cache",message:"service worker caches",data:{caches:keys,controller:navigator.serviceWorker&&navigator.serviceWorker.controller?navigator.serviceWorker.controller.scriptURL:null,build:"v11-debug"},timestamp:Date.now()})}).catch(()=>{});
+      }).catch(()=>{});
+    }
+    // #endregion
+
     document.querySelectorAll(".switch").forEach(bindSwitch);
 
     document.querySelectorAll("input").forEach((el) => {
