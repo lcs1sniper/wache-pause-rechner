@@ -65,7 +65,8 @@
       margin-bottom: 22px;
     }
 
-    html.ipad-app header {
+    html.ipad-app header,
+    html.iphone-app header {
       margin-top: 36px;
     }
 
@@ -764,6 +765,7 @@
     const isIphone = /iPhone|iPod/.test(ua);
     const isIpad = /iPad/.test(ua) || (!isIphone && navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
     if (standalone && isIpad) document.documentElement.classList.add("ipad-app");
+    if (standalone && isIphone) document.documentElement.classList.add("iphone-app");
 
     document.querySelectorAll(".switch").forEach(bindSwitch);
 
